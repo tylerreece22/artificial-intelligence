@@ -5,7 +5,7 @@ column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')]
 unitlist = row_units + column_units + square_units
 
-# TODO: Update the unit list to add the new diagonal units
+# Added diagonal units
 left_to_right_diagonal_units = [(letter + str(1 + rows.index(letter))) for letter in rows]
 right_to_left_diagonal_units = [(letter + str(9 - rows.index(letter))) for letter in rows]
 unitlist.append(left_to_right_diagonal_units)
@@ -53,13 +53,21 @@ def naked_twins(values):
     Pseudocode for this algorithm on github:
     https://github.com/udacity/artificial-intelligence/blob/master/Projects/1_Sudoku/pseudocode.md
     """
-    # TODO: Implement this function!
-    test_values = values.copy()
-    # for key in test_values.keys():
-    #      for value in test_values.values():
-    #
+    naked_twins = [box for box in values.keys() if len(values[box]) == 2]
 
-    raise NotImplementedError
+    if len(naked_twins) == 0:
+        return values
+
+    # I hate this way but do not have the time currently to make it more efficient
+    test_values = values.copy()
+    for box in naked_twins:
+        for peer in peers[box]:
+            if test_values[peer] == test_values[box] and len(test_values[peer]) == 2:
+                for commonPeer in peers[box] & peers[peer]:
+                    for digit in test_values[box]:
+                        test_values[commonPeer] = test_values[commonPeer].replace(digit, '')
+
+    return test_values
 
 
 def eliminate(values):
@@ -104,6 +112,7 @@ def reduce_puzzle(values):
         solved_values_before = len([box for box in values.keys() if len(values[box]) == 1])
         values = eliminate(values)
         values = only_choice(values)
+        values = naked_twins(values)
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
         stalled = solved_values_before == solved_values_after
         if len([box for box in values.keys() if len(values[box]) == 0]):
