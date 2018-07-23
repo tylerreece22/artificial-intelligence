@@ -33,39 +33,20 @@ def naked_twins(values):
     -------
     dict
         The values dictionary with the naked twins eliminated from peers
-
-    Notes
-    -----
-    Your solution can either process all pairs of naked twins from the input once,
-    or it can continue processing pairs of naked twins until there are no such
-    pairs remaining -- the project assistant test suite will accept either
-    convention. However, it will not accept code that does not process all pairs
-    of naked twins from the original input. (For example, if you start processing
-    pairs of twins and eliminate another pair of twins before the second pair
-    is processed then your code will fail the PA test suite.)
-
-    The first convention is preferred for consistency with the other strategies,
-    and because it is simpler (since the reduce_puzzle function already calls this
-    strategy repeatedly).
-
-    See Also
-    --------
-    Pseudocode for this algorithm on github:
-    https://github.com/udacity/artificial-intelligence/blob/master/Projects/1_Sudoku/pseudocode.md
     """
-    naked_twins = [box for box in values.keys() if len(values[box]) == 2]
+    test_values = values.copy()
+    twins = [box for box in boxes if len(values[box]) == 2]
 
-    if len(naked_twins) == 0:
+    if len(twins) == 0:
         return values
 
-    # I hate this way but do not have the time currently to make it more efficient
-    test_values = values.copy()
-    for box in naked_twins:
-        for peer in peers[box]:
-            if test_values[peer] == test_values[box] and len(test_values[peer]) == 2:
-                for commonPeer in peers[box] & peers[peer]:
-                    for digit in test_values[box]:
-                        test_values[commonPeer] = test_values[commonPeer].replace(digit, '')
+    true_twins = [[twin1, twin2] for twin1 in twins for twin2 in peers[twin1] if
+                  test_values[twin2] == test_values[twin1]]
+
+    for twin1, twin2 in true_twins:
+        for commonPeer in (peers[twin1] & peers[twin2]):
+            for digit in test_values[twin1]:
+                test_values[commonPeer] = test_values[commonPeer].replace(digit, '')
 
     return test_values
 
@@ -164,7 +145,12 @@ def solve(grid):
 
 
 if __name__ == "__main__":
-    diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
+    # Passed puzzle that came with project
+    # diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
+
+    # Failed when submitted to udacity
+    diag_sudoku_grid = '9.1....8.8.5.7..4.2.4....6...7......5..............83.3..6......9................'
+
     display(grid2values(diag_sudoku_grid))
     result = solve(diag_sudoku_grid)
     display(result)
