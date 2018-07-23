@@ -121,7 +121,6 @@ def search(values):
         attempt = search(new_sudoku)
         if attempt:
             return attempt
-    return values
 
 
 def solve(grid):
@@ -146,10 +145,10 @@ def solve(grid):
 
 if __name__ == "__main__":
     # Passed puzzle that came with project
-    # diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
+    diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
 
     # Failed when submitted to udacity
-    diag_sudoku_grid = '9.1....8.8.5.7..4.2.4....6...7......5..............83.3..6......9................'
+    # diag_sudoku_grid = '9.1....8.8.5.7..4.2.4....6...7......5..............83.3..6......9................'
 
     display(grid2values(diag_sudoku_grid))
     result = solve(diag_sudoku_grid)
